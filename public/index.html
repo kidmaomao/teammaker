@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>洛奇副本组队匹配平台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/styles/style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-people-fill"></i> 洛奇组队匹配
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">首页</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="teamsTab">招募大厅</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="playersTab">寻找队伍</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal">关于</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold">洛奇副本组队匹配平台</h1>
+            <p class="lead">快速找到合适的队友，轻松挑战各种高难度副本</p>
+            <button class="btn btn-light btn-lg mt-3" data-bs-toggle="modal" data-bs-target="#postModal">
+                <i class="bi bi-plus-circle"></i> 发布招募信息
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="filter-section">
+            <h5 class="mb-3"><i class="bi bi-funnel"></i> 筛选条件</h5>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">服务器</label>
+                    <select class="form-select" id="serverFilter">
+                        <option value="all">所有服务器</option>
+                        <option value="亚特服">亚特服</option>
+                        <option value="伊鲁夏服">伊鲁夏服</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">副本选择</label>
+                    <select class="form-select" id="dungeonFilter">
+                        <option value="all">所有副本</option>
+                        <option value="猫本">猫本</option>
+                        <option value="雪本">雪本</option>
+                        <option value="布本">布本</option>
+                        <option value="活动地狱之门">活动地狱之门</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">类型</label>
+                    <select class="form-select" id="typeFilter">
+                        <option value="all">全部类型</option>
+                        <option value="recruitment">招募队伍</option>
+                        <option value="looking">寻找队伍</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">排序方式</label>
+                    <select class="form-select" id="sortFilter">
+                        <option value="newest">最新发布</option>
+                        <option value="oldest">最早发布</option>
+                    </select>
+                </div>
+            </div>
+            <div class="text-center">
+                <button class="btn btn-primary" id="applyFilters"><i class="bi bi-funnel"></i> 应用筛选</button>
+                <button class="btn btn-outline-secondary ms-2" id="resetFilters"><i class="bi bi-arrow-repeat"></i> 重置筛选</button>
+            </div>
+        </div>
+
+        <div id="loadingIndicator" class="text-center my-4" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">加载中...</span>
+            </div>
+            <p class="mt-2">正在加载数据...</p>
+        </div>
+
+        <div id="listingsContainer" class="row"></div>
+
+        <nav aria-label="Page navigation" class="mt-4" id="paginationContainer" style="display: none;">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled" id="prevPage">
+                    <a class="page-link" href="#" tabindex="-1">上一页</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item" id="nextPage">
+                    <a class="page-link" href="#">下一页</a>
+                </li>
+            </ul>
+        </nav>
+
+        <div id="emptyState" class="text-center my-5" style="display: none;">
+            <i class="bi bi-inbox display-1 text-muted"></i>
+            <h4 class="text-muted mt-3">暂无招募信息</h4>
+            <p class="text-muted">成为第一个发布招募信息的人吧！</p>
+            <button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#postModal">
+                发布招募信息
+            </button>
+        </div>
+    </div>
+
+    <div class="modal fade" id="postModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">发布招募信息</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="listingForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">招募类型 <span class="text-danger">*</span></label>
+                                <select class="form-select" id="listingType" required>
+                                    <option value="" selected disabled>请选择类型</option>
+                                    <option value="recruitment">招募队伍</option>
+                                    <option value="looking">寻找队伍</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">服务器 <span class="text-danger">*</span></label>
+                                <select class="form-select" id="server" required>
+                                    <option value="" selected disabled>请选择服务器</option>
+                                    <option value="亚特服">亚特服</option>
+                                    <option value="伊鲁夏服">伊鲁夏服</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">标题 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="title" placeholder="例如：猫本速刷队" required>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">副本选择 <span class="text-danger">*</span></label>
+                                <select class="form-select" id="dungeon" required>
+                                    <option value="" selected disabled>请选择副本</option>
+                                    <option value="猫本">猫本</option>
+                                    <option value="雪本">雪本</option>
+                                    <option value="布本">布本</option>
+                                    <option value="活动地狱之门">活动地狱之门</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">职业</label>
+                                <select class="form-select" id="playerClass">
+                                    <option value="" selected>不限职业</option>
+                                    <option value="圣骑">圣骑</option>
+                                    <option value="黑魔">黑魔</option>
+                                    <option value="流星">流星</option>
+                                    <option value="魔剑">魔剑</option>
+                                    <option value="圣歌">圣歌</option>
+                                    <option value="爆骑">爆骑</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">面板/配置要求</label>
+                                <input type="text" class="form-control" id="damageRequirement" placeholder="例如：魔剑大伤2000+">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">穿刺要求</label>
+                                <select class="form-select" id="piercingRequirement">
+                                    <option value="" selected>不限穿刺</option>
+                                    <option value="1">1+</option>
+                                    <option value="2">2+</option>
+                                    <option value="3">3+</option>
+                                    <option value="4">4+</option>
+                                    <option value="5">5+</option>
+                                    <option value="6">6+</option>
+                                    <option value="7">7+</option>
+                                    <option value="8">8+</option>
+                                    <option value="9">9+</option>
+                                    <option value="10">10+</option>
+                                    <option value="11">11</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">目标人数</label>
+                                <input type="number" class="form-control" id="targetMembers" min="1" max="8" value="4">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">奖励分配方式</label>
+                                <select class="form-select" id="rewardMethod">
+                                    <option value="自roll">自roll</option>
+                                    <option value="团队roll">团队roll</option>
+                                    <option value="平均分配">平均分配</option>
+                                    <option value="其他">其他</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">游戏时间 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="gameTime" placeholder="例如：今晚8点，周末下午等" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">联系方式 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="contact" placeholder="例如：游戏ID、QQ号、微信号等" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">其他要求</label>
+                            <textarea class="form-control" id="requirements" rows="3" placeholder="例如：需要语音交流，要求熟悉机制等"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="submitListing">发布招募</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="aboutModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">关于洛奇组队匹配平台</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>这是一个为《洛奇》玩家设计的副本组队匹配平台，帮助玩家快速找到合适的队友。</p>
+                    <p>平台特点：</p>
+                    <ul>
+                        <li>无需登录，简单发布招募信息</li>
+                        <li>支持多种筛选条件，快速找到合适队伍</li>
+                        <li>实时更新，信息及时有效</li>
+                    </ul>
+                    <p class="mb-0">如有问题或建议，请联系我们。</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="custom-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <h5>洛奇组队匹配平台</h5>
+                    <p>专为《洛奇》玩家设计的副本组队匹配平台，帮助玩家快速找到合适的队友。</p>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>链接</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">首页</a></li>
+                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#aboutModal">关于</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>技术</h5>
+                    <ul class="list-unstyled">
+                        <li>GitHub Pages</li>
+                        <li>Vercel Serverless</li>
+                        <li>MongoDB Atlas</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="mt-4 mb-4">
+            <p class="text-center mb-0">© 2023 洛奇组队匹配平台 - 基于Vercel构建</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/scripts/data-manager.js"></script>
+    <script src="/scripts/form-handler.js"></script>
+    <script src="/scripts/app.js"></script>
+</body>
+</html>

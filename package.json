@@ -1,0 +1,26 @@
+{
+  "name": "mabinogi-party-finder",
+  "version": "1.0.0",
+  "description": "洛奇副本组队匹配平台",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build step needed for static site'",
+    "start": "vercel start"
+  },
+  "dependencies": {
+    "mongodb": "^5.7.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@vercel/node": "^2.0.0"
+  },
+  "keywords": [
+    "mabinogi",
+    "gaming",
+    "party-finder",
+    "vercel"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
