@@ -23,5 +23,5 @@
 ### 1. 克隆项目
 
 ```bash
-git clone https://github.com/your-username/mabinogi-party-finder.git
-cd mabinogi-party-finder
+git clone https://github.com/kidmaomao/teammaker.git
+cd teammaker
