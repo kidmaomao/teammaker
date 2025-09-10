@@ -1,8 +1,10 @@
-import { getCollection } from '../../lib/mongodb';
-import { Listing } from '../../models/Listing';
-import { v4 as uuidv4 } from 'uuid';
+// api/submissions.js
+const { getCollection } = require('../../lib/mongodb');
+const { Listing } = require('../../models/Listing');
+const { v4: uuidv4 } = require('uuid');
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
+  // 设置CORS头
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -55,4 +57,4 @@ export default async function handler(req, res) {
   }
 
   return res.status(405).json({ success: false, message: '方法不允许' });
-}
+};
